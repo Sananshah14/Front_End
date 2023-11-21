@@ -6,10 +6,7 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Google Maps</h5>
-            <div
-              id="google-map"
-              style="width: 100%; height: 500px; border: 1px solid black"
-            ></div>
+            <Map></Map>
           </div>
         </div>
       </div>
@@ -72,10 +69,11 @@
 <script>
 import axios from "axios";
 import AddWaypointsForm from "@/components/Waypoints.vue";
-
+import Map from "@/components/Map.vue";
 export default {
   components: {
     AddWaypointsForm,
+    Map,
   },
   data() {
     return {
