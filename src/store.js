@@ -24,6 +24,9 @@ export default createStore({
     removeWaypoint({ commit }, index) {
       commit("REMOVE_WAYPOINT", index);
     },
+    clearWaypoints({ commit }) {
+      commit("setWaypoints", []);
+    },
   },
   getters: {
     waypoints: (state) => state.waypoints,

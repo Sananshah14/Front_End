@@ -20,6 +20,7 @@
     <button type="button" @click="saveWaypoints" class="btn btn-primary">
       Save Waypoints
     </button>
+    <p v-if="saveMessage" style="margin-top: 10px">{{ saveMessage }}</p>
   </div>
 </template>
 
@@ -28,26 +29,47 @@ import { mapGetters, mapActions } from "vuex";
 import axios from "axios";
 
 export default {
+  data() {
+    return {
+      saveMessage: null,
+    };
+  },
   computed: {
     ...mapGetters(["waypoints"]),
   },
   methods: {
-    ...mapActions(["removeWaypoint"]),
+    ...mapActions(["removeWaypoint", "clearWaypoints"]),
     async saveWaypoints() {
-      // Format waypoints as objects with keys "latitude" and "longitude"
-      const formattedWaypoints = this.waypoints.map((waypoint) => ({
-        latitude: Number(waypoint.latitude).toFixed(6),
-        longitude: Number(waypoint.longitude).toFixed(6),
-      }));
-
-      console.log(formattedWaypoints);
       try {
-        // Send a POST request to save waypoints to the backend
-        const response = await axios.post(
-          "http://127.0.0.1:8000/api/waypoints/",
-          formattedWaypoints
-        );
-        console.log("Waypoints saved successfully:", response.data);
+        // Fetch waypoints from the Vuex store
+        const waypoints = this.waypoints;
+
+        // Ensure there are waypoints to save
+        if (waypoints.length === 0) {
+          console.log("No waypoints to save.");
+          return;
+        }
+
+        // Send individual requests for each waypoint
+        for (const waypoint of waypoints) {
+          const formattedWaypoint = {
+            latitude: Number(waypoint.latitude).toFixed(6),
+            longitude: Number(waypoint.longitude).toFixed(6),
+          };
+
+          // Send a POST request to save the waypoint to the backend
+          const response = await axios.post(
+            "http://127.0.0.1:8000/api/waypoints/",
+            formattedWaypoint,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          this.saveMessage = "All waypoints have been saved successfully!";
+          this.clearWaypoints();
+        }
       } catch (error) {
         console.error("Error saving waypoints:", error);
       }
