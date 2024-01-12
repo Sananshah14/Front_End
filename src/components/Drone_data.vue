@@ -39,7 +39,6 @@
                   v-for="mapType in mapTypes"
                   :key="mapType.id"
                   :value="mapType.id"
-                  placeholder="Select a Map Type"
                 >
                   {{ mapType.name }}
                 </option>
