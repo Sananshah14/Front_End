@@ -5,6 +5,7 @@ import Drone_data from "./components/Drone_data.vue";
 import HomePage from "./components/HomePage.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import "bootstrap/dist/css/bootstrap.css";
+import store from "./store";
 
 const routes = [
   {
@@ -31,4 +32,5 @@ const router = createRouter({
 
 const app = createApp(App);
 app.use(router);
+app.use(store);
 app.mount("#app");

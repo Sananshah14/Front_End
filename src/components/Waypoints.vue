@@ -1,79 +1,56 @@
+<!-- waypoints.vue -->
 <template>
   <div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Add Waypoints Form</h5>
-        <form @submit.prevent="submitForm">
-          <!-- Add at least 10 input fields as needed -->
-          <div class="form-group">
-            <label for="height">Height:</label>
-            <input
-              type="text"
-              id="height"
-              v-model="formData.height"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="height">Speed:</label>
-            <input
-              type="text"
-              id="speed"
-              v-model="formData.speed"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="height">Battery:</label>
-            <input
-              type="text"
-              id="battery"
-              v-model="formData.battery"
-              class="form-control"
-              required
-            />
-          </div>
-          <!-- Repeat similar code for other input fields -->
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            style="margin-top: 10px"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
-    </div>
+    <ul v-if="waypoints">
+      <li
+        v-for="(waypoint, index) in waypoints"
+        :key="waypoint.id"
+        style="margin-bottom: 5px"
+      >
+        {{ waypoint.latitude }}, {{ waypoint.longitude }}
+        <button
+          type="button"
+          @click="removeWaypoint(index)"
+          class="btn btn-danger"
+        >
+          Remove
+        </button>
+      </li>
+    </ul>
+    <button type="button" @click="saveWaypoints" class="btn btn-primary">
+      Save Waypoints
+    </button>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      formData: {
-        height: "",
-        speed: "",
-        battery: "",
+import { mapGetters, mapActions } from "vuex";
+import axios from "axios";
 
-        // Add other form fields here
-      },
-    };
+export default {
+  computed: {
+    ...mapGetters(["waypoints"]),
   },
   methods: {
-    submitForm() {
-      // Use Axios to post the formData to the server
-      // For example:
-      // axios.post('http://127.0.0.1:8000/api/waypoints', this.formData)
-      //   .then(response => {
-      //     // Handle success
-      //   })
-      //   .catch(error => {
-      //     // Handle error
-      //   });
+    ...mapActions(["removeWaypoint"]),
+    async saveWaypoints() {
+      // Format waypoints as objects with keys "latitude" and "longitude"
+      const formattedWaypoints = this.waypoints.map((waypoint) => ({
+        latitude: Number(waypoint.latitude).toFixed(6),
+        longitude: Number(waypoint.longitude).toFixed(6),
+      }));
+
+      console.log(formattedWaypoints);
+      try {
+        // Send a POST request to save waypoints to the backend
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/waypoints/",
+          formattedWaypoints
+        );
+        console.log("Waypoints saved successfully:", response.data);
+      } catch (error) {
+        console.error("Error saving waypoints:", error);
+      }
     },
   },
 };

@@ -6,7 +6,17 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Google Maps</h5>
-            <Map></Map>
+            <!-- Use the Map component and pass the updateWaypoints method -->
+            <Map ref="map" :update-waypoints="updateWaypoints"></Map>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 10px">
+          <div class="card-body">
+            <h5 class="card-title">List of Waypoints</h5>
+            <Waypoints
+              :waypoints="waypoints"
+              @remove-waypoint="removeWaypoint"
+            />
           </div>
         </div>
       </div>
@@ -27,23 +37,14 @@
                 </option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="mapType">Map Type:</label>
-              <select
-                v-model="selectedMapType"
-                id="mapType"
-                class="form-control"
-              >
-                <option value="">Select a Map Type</option>
-                <option
-                  v-for="mapType in mapTypes"
-                  :key="mapType.id"
-                  :value="mapType.id"
-                >
-                  {{ mapType.name }}
-                </option>
-              </select>
-            </div>
+            <button
+              @click="visitWaypoints"
+              class="btn btn-success"
+              :disabled="!selectedFieldName"
+              style="margin-top: 5px"
+            >
+              Visit
+            </button>
           </div>
         </div>
         <div class="card" style="margin-top: 20px">
@@ -53,11 +54,11 @@
               class="btn btn-primary"
               style="margin-bottom: 10px"
             >
-              Add Waypoints
+              Add Drone Parameters
             </button>
 
             <!-- Include the component with the form outside the v-if div -->
-            <AddWaypointsForm v-if="showForm" />
+            <AddDroneParams v-if="showForm" />
           </div>
         </div>
       </div>
@@ -67,20 +68,20 @@
 
 <script>
 import axios from "axios";
-import AddWaypointsForm from "@/components/Waypoints.vue";
+import AddDroneParams from "@/components/DroneParams.vue";
 import Map from "@/components/Map.vue";
+import Waypoints from "@/components/Waypoints.vue";
+
 export default {
   components: {
-    AddWaypointsForm,
+    AddDroneParams,
     Map,
+    Waypoints,
   },
   data() {
     return {
       fieldNames: [], // Array to store field names
-      mapTypes: [],
       selectedFieldName: null,
-      selectedMapType: null,
-      map: null,
       showForm: false,
     };
   },
@@ -99,9 +100,27 @@ export default {
     showAddWaypointsForm() {
       this.showForm = true;
     },
+    visitWaypoints() {
+      if (this.selectedFieldName) {
+        // Fetch waypoints for the selected field name
+        axios
+          .get(
+            `http://127.0.0.1:8000/api/fielddata/${this.selectedFieldName}/waypoints/`
+          )
+          .then((response) => {
+            const waypoints = response.data;
+
+            this.$refs.map.updateWaypoints(waypoints);
+          })
+          .catch((error) => {
+            console.error("Error fetching Waypoints:", error);
+          });
+      }
+    },
   },
 };
 </script>
+
 <style scoped>
 .container {
   margin: auto;
