@@ -47,20 +47,6 @@
             </button>
           </div>
         </div>
-        <div class="card" style="margin-top: 20px">
-          <div class="card-body">
-            <button
-              @click="showAddWaypointsForm"
-              class="btn btn-primary"
-              style="margin-bottom: 10px"
-            >
-              Add Drone Parameters
-            </button>
-
-            <!-- Include the component with the form outside the v-if div -->
-            <AddDroneParams v-if="showForm" />
-          </div>
-        </div>
       </div>
     </div>
   </div>

@@ -6,7 +6,6 @@
 
 <script>
 import { Map, MapStyle, config, Marker } from "@maptiler/sdk";
-import { mapActions } from "vuex";
 
 export default {
   name: "Map",
