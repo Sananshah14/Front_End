@@ -6,9 +6,10 @@
 
 <script>
 import { Map, MapStyle, config, Marker } from "@maptiler/sdk";
-
+import { mapActions } from "vuex";
 export default {
   name: "Map",
+  props: {},
   data() {
     return {
       mapContainer: null,
@@ -17,8 +18,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["addWaypoint"]), // Import the addWaypoint action
-
+    ...mapActions(["addWaypoint"]),
     initializeMap() {
       config.apiKey = "d7sjxphz2S288I4FXSth";
 
@@ -53,31 +53,12 @@ export default {
         .setLngLat([lngLat.lng, lngLat.lat])
         .addTo(this.map);
 
-      // Call the Vuex action to add the waypoint
+      // Call the parent component's method to update waypoints
       this.addWaypoint({ latitude: lngLat.lat, longitude: lngLat.lng });
     },
-    updateWaypoints(waypoints) {
-      if (!waypoints) {
-        console.warn("Invalid waypoints data:", waypoints);
-        return;
-      }
-
-      const waypointsArray = Array.isArray(waypoints) ? waypoints : [waypoints];
-
-      if (this.map && waypointsArray.length > 0) {
-        const [longitude, latitude] = [
-          waypointsArray[0].longitude,
-          waypointsArray[0].latitude,
-        ];
-
-        console.log("Updating map center to:", latitude, longitude);
-
-        this.map.flyTo({
-          center: [longitude, latitude],
-          zoom: 14,
-        });
-      } else {
-        console.warn("Invalid waypoints data:", waypoints);
+    updateWaypoints(latitude, longitude, zoom = 14) {
+      if (this.map) {
+        this.map.flyTo({ center: [longitude, latitude], zoom });
       }
     },
   },

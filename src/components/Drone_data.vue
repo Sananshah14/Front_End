@@ -16,6 +16,7 @@
             <Waypoints
               :waypoints="waypoints"
               @remove-waypoint="removeWaypoint"
+              @waypoints-updated="handleWaypointsUpdate"
             />
           </div>
         </div>
@@ -26,25 +27,63 @@
             <h5 class="card-title">Form Inputs</h5>
             <div class="form-group">
               <label for="fieldName">Field Name:</label>
-              <select
-                v-model="selectedFieldName"
+              <input
+                v-model="fieldName"
                 id="fieldName"
                 class="form-control"
-              >
-                <option value="">Select a Fieldname</option>
-                <option v-for="fieldName in fieldNames" :key="fieldName">
-                  {{ fieldName }}
-                </option>
-              </select>
+                placeholder="Enter Fieldname"
+              />
+            </div>
+            <div class="form-group">
+              <label for="latitude">Latitude:</label>
+              <input
+                v-model="latitude"
+                id="latitude"
+                class="form-control"
+                placeholder="Enter Latitude"
+              />
+            </div>
+            <div class="form-group">
+              <label for="longitude">Longitude:</label>
+              <input
+                v-model="longitude"
+                id="longitude"
+                class="form-control"
+                placeholder="Enter Longitude"
+              />
             </div>
             <button
               @click="visitWaypoints"
               class="btn btn-success"
-              :disabled="!selectedFieldName"
-              style="margin-top: 5px"
+              :disabled="!fieldName || !latitude || !longitude"
+              style="margin: 5px"
             >
-              Visit
+              Visit Waypoints
             </button>
+            <button
+              @click="saveData"
+              class="btn btn-success"
+              :disabled="
+                !fieldName || !latitude || !longitude || !waypoints.length
+              "
+              style="margin: 5px"
+            >
+              Save Data
+            </button>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 20px">
+          <div class="card-body">
+            <button
+              @click="showAddWaypointsForm"
+              class="btn btn-primary"
+              style="margin-bottom: 10px"
+            >
+              Add Drone Parameters
+            </button>
+
+            <!-- Include the component with the form outside the v-if div -->
+            <AddDroneParams v-if="showForm" />
           </div>
         </div>
       </div>
@@ -66,42 +105,49 @@ export default {
   },
   data() {
     return {
-      fieldNames: [], // Array to store field names
-      selectedFieldName: null,
+      fieldName: "",
+      latitude: "",
+      longitude: "",
       showForm: false,
+      waypoints: [],
     };
   },
-  created() {
-    // Fetch Field Names from the Django backend using Axios
-    axios
-      .get("http://127.0.0.1:8000/api/field-names/") // Make a GET request to the field names API endpoint
-      .then((response) => {
-        this.fieldNames = response.data;
-      })
-      .catch((error) => {
-        console.error("Error fetching Field Names:", error);
-      });
-  },
+
   methods: {
     showAddWaypointsForm() {
       this.showForm = true;
     },
     visitWaypoints() {
-      if (this.selectedFieldName) {
-        // Fetch waypoints for the selected field name
-        axios
-          .get(
-            `http://127.0.0.1:8000/api/fielddata/${this.selectedFieldName}/waypoints/`
-          )
-          .then((response) => {
-            const waypoints = response.data;
-
-            this.$refs.map.updateWaypoints(waypoints);
-          })
-          .catch((error) => {
-            console.error("Error fetching Waypoints:", error);
-          });
+      if (this.latitude && this.longitude) {
+        this.$refs.map.updateWaypoints(
+          parseFloat(this.latitude),
+          parseFloat(this.longitude)
+        );
       }
+    },
+    handleWaypointsUpdate(waypoints) {
+      this.waypoints = waypoints;
+    },
+    saveData() {
+      // Log fieldName, latitude, longitude, and waypoints before posting
+      console.log("Field Name:", this.fieldName);
+      console.log("Latitude:", this.latitude);
+      console.log("Longitude:", this.longitude);
+      console.log("Waypoints:", this.waypoints);
+
+      // Make API call to post the data
+      axios
+        .post("http://127.0.0.1:8000/api/store-drone-data/", {
+          fieldName: this.fieldName,
+          location: { latitude: this.latitude, longitude: this.longitude },
+          waypoints: this.waypoints,
+        })
+        .then((response) => {
+          console.log("Data posted successfully:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error posting data:", error);
+        });
     },
   },
 };

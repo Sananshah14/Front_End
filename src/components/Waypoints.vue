@@ -1,13 +1,12 @@
-<!-- waypoints.vue -->
 <template>
   <div>
-    <ul v-if="waypoints">
+    <ul v-if="waypoints && waypoints.length">
       <li
         v-for="(waypoint, index) in waypoints"
-        :key="waypoint.id"
+        :key="index"
         style="margin-bottom: 5px"
       >
-        {{ waypoint.latitude }}, {{ waypoint.longitude }}
+        Latitude: {{ waypoint.latitude }}, Longitude: {{ waypoint.longitude }}
         <button
           type="button"
           @click="removeWaypoint(index)"
@@ -26,7 +25,6 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import axios from "axios";
 
 export default {
   data() {
@@ -38,38 +36,20 @@ export default {
     ...mapGetters(["waypoints"]),
   },
   methods: {
-    ...mapActions(["removeWaypoint", "clearWaypoints"]),
+    ...mapActions(["removeWaypoint", "clearWaypoints", "addWaypoint"]),
     async saveWaypoints() {
       try {
         // Fetch waypoints from the Vuex store
         const waypoints = this.waypoints;
 
-        // Ensure there are waypoints to save
-        if (waypoints.length === 0) {
-          console.log("No waypoints to save.");
-          return;
-        }
+        // Emit event to send waypoints to parent component (Drone_data.vue)
+        this.$emit("waypoints-updated", waypoints);
 
-        // Send individual requests for each waypoint
-        for (const waypoint of waypoints) {
-          const formattedWaypoint = {
-            latitude: Number(waypoint.latitude).toFixed(6),
-            longitude: Number(waypoint.longitude).toFixed(6),
-          };
+        // Clear waypoints from Vuex store
+        this.clearWaypoints();
 
-          // Send a POST request to save the waypoint to the backend
-          const response = await axios.post(
-            "http://127.0.0.1:8000/api/waypoints/",
-            formattedWaypoint,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          this.saveMessage = "All waypoints have been saved successfully!";
-          this.clearWaypoints();
-        }
+        // Update save message
+        this.saveMessage = "Waypoints sent to Drone Data component!";
       } catch (error) {
         console.error("Error saving waypoints:", error);
       }
