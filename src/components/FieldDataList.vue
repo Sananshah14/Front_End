@@ -7,44 +7,51 @@
       </div>
     </div>
     <div v-else>
-      <table class="table table-striped table-bordered table-hover">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">Field Name</th>
-            <th scope="col">Latitude</th>
-            <th scope="col"><th scope="col">Latitude</th></th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(fieldData, index) in fieldDataList" :key="index">
-            <td>{{ fieldData.fieldname }}</td>
-            <td>
-              <div>
-                <span class="font-weight-bold">Latitude:</span>
-                {{ fieldData.location.latitude }}
-              </div>
-            </td>
-            <td>
-              <div>
-                <span class="font-weight-bold">Longitude:</span>
-                {{ fieldData.location.longitude }}
-              </div>
-            </td>
-            <td>
-              <button
-                @click="deleteFieldData(fieldData.id)"
-                class="btn btn-danger btn-sm"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <router-link :to="{ name: 'DroneData' }" class="btn btn-primary" >Add Field Data</router-link>
-      <router-link :to="{ name: 'HomePage' }" class="btn btn-primary" style="margin-left: 5px">Back to HomePage</router-link>
+      <div
+        v-if="fieldDataList.length === 0"
+        class="alert alert-info"
+        role="alert"
+      >
+        No field data available.
+      </div>
+      <div v-else>
+        <table class="table table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Field Name</th>
+              <th>Location's Latitude</th>
+              <th>Location's Longitude</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(fieldData, index) in fieldDataList" :key="index">
+              <td>{{ fieldData.fieldname }}</td>
+              <td>{{ fieldData.location.latitude }}</td>
+              <td>{{ fieldData.location.longitude }}</td>
+
+              <td>
+                <button
+                  @click="deleteFieldData(fieldData.id)"
+                  class="btn btn-danger btn-sm"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <router-link :to="{ name: 'DroneData' }" class="btn btn-primary"
+      >Add Field Data</router-link
+    >
+    <router-link
+      :to="{ name: 'HomePage' }"
+      class="btn btn-primary"
+      style="margin-left: 5px"
+      >Back to HomePage</router-link
+    >
   </div>
 </template>
 
@@ -83,9 +90,6 @@ export default {
       } catch (error) {
         console.error("Error deleting Field Data:", error);
       }
-    },
-    addFieldData() {
-        
     },
   },
 };

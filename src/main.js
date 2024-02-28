@@ -4,6 +4,7 @@ import Data_Visualization from "./components/Data_Visualization.vue";
 import Drone_data from "./components/Drone_data.vue";
 import HomePage from "./components/HomePage.vue";
 import FieldDataList from "./components/FieldDataList.vue";
+import UploadMapType from "./components/UploadMapType.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import "bootstrap/dist/css/bootstrap.css";
 import store from "./store";
@@ -29,6 +30,11 @@ const routes = [
     name: "DroneData", // Add a name to the component
     component: Drone_data,
   },
+  {
+    path: "/maptype",
+    name: "UploadMapType", // Add a name to the component
+    component: UploadMapType,
+  },
 ];
 
 const router = createRouter({
@@ -37,6 +43,7 @@ const router = createRouter({
 });
 
 const app = createApp(App);
+
 app.use(router);
 app.use(store);
 app.mount("#app");
