@@ -9,7 +9,10 @@ import { Map, MapStyle, config, Marker } from "@maptiler/sdk";
 import { mapActions } from "vuex";
 export default {
   name: "Map",
-  props: {},
+  props: {
+    latitude: String,
+    longitude: String,
+  },
   data() {
     return {
       mapContainer: null,

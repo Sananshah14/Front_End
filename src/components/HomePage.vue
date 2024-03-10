@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-2">
         <img
-          src="./../../public/images.png"
+          src="../images.png"
           alt="Left Logo"
           class="img-fluid"
           style="margin-top: -60px"
@@ -41,11 +41,7 @@
       </div>
       <div class="col-md-2">
         <!-- Right Logo -->
-        <img
-          src="./../../public/RPTU_Logo.svg.png"
-          alt="Right Logo"
-          class="img-fluid"
-        />
+        <img src="./RPTU_Logo.svg.png" alt="Right Logo" class="img-fluid" />
       </div>
     </div>
   </div>
